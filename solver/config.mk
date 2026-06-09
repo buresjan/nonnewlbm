@@ -24,7 +24,7 @@ use_UMFPACK = no
 use_TNL_LAGRANGE = no
 
 # Override this if pkg-config does not know your VTK installation.
-VTK_CONFIG ?= $(shell pkg-config --cflags --libs vtk 2>/dev/null || pkg-config --cflags --libs vtk-9.4 2>/dev/null || echo "-I/usr/include/vtk -lvtkCommonCore -lvtkIOLegacy -lvtkCommonDataModel -lvtkIOXML")
+VTK_CONFIG ?= $(shell pkg-config --cflags --libs vtk 2>/dev/null || pkg-config --cflags --libs vtk-9.4 2>/dev/null || echo "-I/usr/include/vtk -lvtkCommonCore -lvtkIOLegacy -lvtkCommonDataModel -lvtkIOXML -lvtksys")
 
 
 GPU_ARCH ?= sm_75

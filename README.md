@@ -34,7 +34,7 @@ If VTK is not discoverable through `pkg-config`, pass `VTK_CONFIG`:
 ```bash
 scripts/build_solver.sh \
   TNL_DIR=/path/to/tnl_submodule \
-  VTK_CONFIG="-I/usr/include/vtk -lvtkCommonCore -lvtkIOLegacy -lvtkCommonDataModel -lvtkIOXML"
+  VTK_CONFIG="-I/usr/include/vtk -lvtkCommonCore -lvtkIOLegacy -lvtkCommonDataModel -lvtkIOXML -lvtksys"
 ```
 
 ## Geometry
