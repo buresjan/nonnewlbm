@@ -528,6 +528,59 @@ struct StateTcpc : State<LBM_TYPE, MACRO, CPU_MACRO, LBM_DATA, LBM_BC>
 		lbm.setBoundaryZ(0, LBM_BC::GEO_WALL);
 		lbm.setBoundaryZ(lbm.global_Z - 1, LBM_BC::GEO_WALL);
 
+		auto countOpenPlaneX = [&](idx x) -> long long {
+			if (!lbm.isLocalX(x)) return 0;
+			long long count = 0;
+			for (idx y = lbm.offset_Y; y < lbm.offset_Y + lbm.local_Y; ++y)
+			for (idx z = lbm.offset_Z; z < lbm.offset_Z + lbm.local_Z; ++z) {
+				if (!lbm.getWall(x, y, z)) ++count;
+			}
+			return count;
+		};
+		auto countOpenPlaneY = [&](idx y) -> long long {
+			if (!lbm.isLocalY(y)) return 0;
+			long long count = 0;
+			for (idx x = lbm.offset_X; x < lbm.offset_X + lbm.local_X; ++x)
+			for (idx z = lbm.offset_Z; z < lbm.offset_Z + lbm.local_Z; ++z) {
+				if (!lbm.getWall(x, y, z)) ++count;
+			}
+			return count;
+		};
+		auto openBoundaryX = [&](idx boundary_x, idx inward_step) {
+			if (!lbm.isLocalX(boundary_x)) return;
+			idx source_x = boundary_x + inward_step;
+			while (source_x > 0 && source_x < lbm.global_X - 1 &&
+			       countOpenPlaneX(source_x) == 0) {
+				source_x += inward_step;
+			}
+			if (source_x <= 0 || source_x >= lbm.global_X - 1) return;
+			for (idx y = lbm.offset_Y; y < lbm.offset_Y + lbm.local_Y; ++y)
+			for (idx z = lbm.offset_Z; z < lbm.offset_Z + lbm.local_Z; ++z) {
+				if (!lbm.getWall(source_x, y, z)) {
+					lbm.defineWall(boundary_x, y, z, false);
+				}
+			}
+		};
+		auto openBoundaryY = [&](idx boundary_y, idx inward_step) {
+			if (!lbm.isLocalY(boundary_y)) return;
+			idx source_y = boundary_y + inward_step;
+			while (source_y > 0 && source_y < lbm.global_Y - 1 &&
+			       countOpenPlaneY(source_y) == 0) {
+				source_y += inward_step;
+			}
+			if (source_y <= 0 || source_y >= lbm.global_Y - 1) return;
+			for (idx x = lbm.offset_X; x < lbm.offset_X + lbm.local_X; ++x)
+			for (idx z = lbm.offset_Z; z < lbm.offset_Z + lbm.local_Z; ++z) {
+				if (!lbm.getWall(x, source_y, z)) {
+					lbm.defineWall(x, boundary_y, z, false);
+				}
+			}
+		};
+		openBoundaryX(0, 1);
+		openBoundaryX(lbm.global_X - 1, -1);
+		openBoundaryY(0, 1);
+		openBoundaryY(lbm.global_Y - 1, -1);
+
 		long long local_left_area = 0;
 		long long local_right_area = 0;
 		long long local_out_front = 0;
@@ -575,6 +628,10 @@ struct StateTcpc : State<LBM_TYPE, MACRO, CPU_MACRO, LBM_DATA, LBM_BC>
 		lbm.data.inflow_right_area = (idx)right_area;
 		if (left_area <= 0 || right_area <= 0) {
 			log("error: zero inlet area detected: left=%lld right=%lld", left_area, right_area);
+			lbm.terminate = true;
+		}
+		if (out_front <= 0 || out_back <= 0) {
+			log("error: zero outlet area detected: outlet5=%lld outlet6=%lld", out_front, out_back);
 			lbm.terminate = true;
 		}
 		log("geometry labels: fluid=%lld wall=%lld IVC(label3)=%lld SVC(label4)=%lld outlet5=%lld outlet6=%lld",

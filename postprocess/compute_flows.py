@@ -44,7 +44,20 @@ def read_vtk(path: Path) -> VtkArrays:
     reader.Update()
     grid = reader.GetOutput()
     dims = grid.GetDimensions()
-    dx = abs(grid.GetPoint(1)[0] - grid.GetPoint(0)[0]) if dims[0] > 1 else 1.0
+    x_coords = grid.GetXCoordinates()
+    if x_coords is None or x_coords.GetNumberOfTuples() < 2:
+        raise RuntimeError(f"{path} has no usable rectilinear x coordinates")
+    previous = x_coords.GetComponent(0, 0)
+    dx = 0.0
+    for i in range(1, x_coords.GetNumberOfTuples()):
+        current = x_coords.GetComponent(i, 0)
+        spacing = abs(current - previous)
+        if spacing > 0.0:
+            dx = spacing
+            break
+        previous = current
+    if dx <= 0.0:
+        raise RuntimeError(f"{path} has non-positive rectilinear x spacing")
 
     point = grid.GetPointData()
     cell = grid.GetCellData()
