@@ -85,6 +85,14 @@ Run one case:
 python3 scripts/run_case.py --regime v1 --material sx
 ```
 
+For pilot or production runs, override timing/output directly on the command
+line instead of editing YAML:
+
+```bash
+python3 scripts/run_case.py --regime v1 --material newtonian --final-time 1 --vtk-period 1
+python3 scripts/run_all_cases.py --final-time 1 --vtk-period 1 --print-period 0.05
+```
+
 The solver writes results under `results_<case-id>/`, for example `results_v1_sx/`.
 
 The command generated for each case passes the prescribed IVC/SVC flow rates from `configs/regimes.yaml` directly in ml/s.
