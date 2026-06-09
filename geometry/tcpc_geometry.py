@@ -12,17 +12,28 @@ Pipeline:
 
 from __future__ import annotations
 
-import vtk
 import os
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import trimesh
 from scipy import ndimage
+from vtkmodules.vtkCommonCore import vtkDoubleArray
+from vtkmodules.vtkCommonDataModel import vtkRectilinearGrid
+from vtkmodules.vtkIOLegacy import vtkRectilinearGridWriter
 
 import tcpc_taper_ends as taper
 from meshgen.utilities import array_to_textfile, extract_surface
 from meshgen.voxels import prepare_voxel_mesh_txt, voxelize_with_splitting
+
+
+class _VTKCompat:
+    vtkDoubleArray = vtkDoubleArray
+    vtkRectilinearGrid = vtkRectilinearGrid
+    vtkRectilinearGridWriter = vtkRectilinearGridWriter
+
+
+vtk = _VTKCompat()
 
 
 #######################PEPEPEP

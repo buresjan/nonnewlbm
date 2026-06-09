@@ -8,7 +8,8 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
-import vtk
+from vtkmodules.vtkCommonCore import vtkDataArray
+from vtkmodules.vtkIOLegacy import vtkRectilinearGridReader
 
 
 DEFAULT_LABELS = {
@@ -21,9 +22,9 @@ DEFAULT_LABELS = {
 
 @dataclass
 class VtkArrays:
-    wall: vtk.vtkDataArray
-    velocity: vtk.vtkDataArray
-    rho: vtk.vtkDataArray | None
+    wall: vtkDataArray
+    velocity: vtkDataArray
+    rho: vtkDataArray | None
     dims: tuple[int, int, int]
     dx: float
 
@@ -36,7 +37,7 @@ def get_array(data, name: str):
 
 
 def read_vtk(path: Path) -> VtkArrays:
-    reader = vtk.vtkRectilinearGridReader()
+    reader = vtkRectilinearGridReader()
     reader.SetFileName(str(path))
     reader.ReadAllScalarsOn()
     reader.ReadAllVectorsOn()
