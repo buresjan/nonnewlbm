@@ -67,6 +67,10 @@ The solver executable is:
 solver/sim_tcpc/sim_tcpc
 ```
 
+The build still needs TNL headers for the lattice arrays, but the unused
+immersed-boundary TNL sparse-matrix branch is disabled by default. Re-enable it
+only for IBM/Lagrange experiments with `use_TNL_LAGRANGE=yes`.
+
 ## Run Cases
 
 Print all configured commands:

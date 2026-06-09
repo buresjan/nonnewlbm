@@ -60,8 +60,12 @@ endif
 # a machine-local TNL checkout.
 TNL_DIR ?= ../tnl_submodule
 TNL_INCLUDE_DIRS := -I $(TNL_DIR)/src/ -I $(TNL_DIR)/src/3rdparty/
-NVCCFLAGS += -DUSE_TNL -DHAVE_OPENMP -DNDEBUG $(TNL_INCLUDE_DIRS)
-CXXFLAGS  += -DUSE_TNL -DHAVE_OPENMP -DNDEBUG $(TNL_INCLUDE_DIRS)
+NVCCFLAGS += -DHAVE_OPENMP -DNDEBUG $(TNL_INCLUDE_DIRS)
+CXXFLAGS  += -DHAVE_OPENMP -DNDEBUG $(TNL_INCLUDE_DIRS)
+ifeq ($(use_TNL_LAGRANGE),yes)
+	NVCCFLAGS += -DUSE_TNL
+	CXXFLAGS += -DUSE_TNL
+endif
 ifeq ($(use_CUDA),yes)
 	NVCCFLAGS += --expt-relaxed-constexpr --expt-extended-lambda
 	NVCCFLAGS += -DHAVE_CUDA
