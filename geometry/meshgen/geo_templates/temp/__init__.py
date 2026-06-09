@@ -1,0 +1,2 @@
+"""Temporary template namespace (empty)."""
+

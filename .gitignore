@@ -1,0 +1,37 @@
+# Build products
+*.o
+*.d
+*.so
+*.a
+solver/sim_tcpc/sim_tcpc
+solver/**/Makefile_autoflags.h
+
+# Generated geometry and simulation outputs
+runtime/
+results/
+results_*/
+geometry.vtk
+test.vtk
+rectilinear_grid.vtk
+*.pvtr
+*.vtr
+
+# Local dependencies and interrupted copies
+solver/tnl_submodule/
+solver/tnl_submodule.partial/
+
+# Scheduler/log artifacts
+slurm-*.out
+*.log
+
+# Python/cache
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Editor/system
+.DS_Store
+.idea/
+.vscode/

@@ -1,0 +1,33 @@
+source:
+  sheet: "#04 PE simulace"
+  prescribed_row: "Data for sym"
+  units: "ml/s"
+regimes:
+  v1:
+    ivc_mls: 8.0
+    svc_mls: 4.833333333
+  v2:
+    ivc_mls: 16.66666667
+    svc_mls: 9.5
+  v3:
+    ivc_mls: 14.16666667
+    svc_mls: 10.83333333
+  v4a:
+    ivc_mls: 33.33333333
+    svc_mls: 18.33333333
+  v4b:
+    ivc_mls: 31.0
+    svc_mls: 16.66666667
+reference_flows_l_min:
+  data_by_rf:
+    v1: {ivc: 0.48, svc: 0.29, rpa: 0.38, lpa: 0.38}
+    v2: {ivc: 1.00, svc: 0.57, rpa: 0.76, lpa: 0.76}
+    v3: {ivc: 0.85, svc: 0.65, rpa: 0.71, lpa: 0.71}
+    v4a: {ivc: 2.00, svc: 1.10, rpa: 1.52, lpa: 1.57}
+    v4b: {ivc: 1.86, svc: 1.00, rpa: 1.48, lpa: 1.48}
+  narrowed_4mm_finer:
+    v1: {ivc: 0.475707823, svc: 0.287095399, rpa: 0.363560015, lpa: 0.378960721}
+    v2: {ivc: 0.994414424, svc: 0.56680041, rpa: 0.748401771, lpa: 0.789856343}
+    v3: {ivc: 0.84541041, svc: 0.646017429, rpa: 0.720226579, lpa: 0.755400878}
+    v4a: {ivc: 2.007353052, svc: 1.103483437, rpa: 1.519386113, lpa: 1.58889734}
+    v4b: {ivc: 1.863038717, svc: 1.001024436, rpa: 1.391573453, lpa: 1.462347569}

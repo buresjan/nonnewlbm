@@ -1,0 +1,21 @@
+materials:
+  newtonian:
+    density_kg_m3: 1000.0
+    nu_inf_m2_s: 1.0e-6
+    model: constant
+  sx:
+    density_kg_m3: 1151.0
+    nu_inf_m2_s: 3.239478711696116e-6
+    model: carreau_yasuda
+    mu0_pa_s: 3.32933884442747e-2
+    lambda_s: 1.20785676226298
+    a: 0.925354152818718
+    n: 0.463126647
+  gx:
+    density_kg_m3: 1088.0
+    nu_inf_m2_s: 4.463085409742886e-6
+    model: carreau_yasuda
+    mu0_pa_s: 1.58517801201338e-2
+    lambda_s: 0.0280506051570583
+    a: 2.34147778848562
+    n: 0.463126647

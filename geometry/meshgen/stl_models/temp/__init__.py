@@ -1,0 +1,2 @@
+"""Temporary STL namespace (empty)."""
+
