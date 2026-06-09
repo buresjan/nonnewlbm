@@ -557,7 +557,9 @@ struct StateTcpc : State<LBM_TYPE, MACRO, CPU_MACRO, LBM_DATA, LBM_BC>
 			for (idx y = lbm.offset_Y; y < lbm.offset_Y + lbm.local_Y; ++y)
 			for (idx z = lbm.offset_Z; z < lbm.offset_Z + lbm.local_Z; ++z) {
 				if (!lbm.getWall(source_x, y, z)) {
-					lbm.defineWall(boundary_x, y, z, false);
+					for (idx x = boundary_x; x != source_x + inward_step; x += inward_step) {
+						lbm.defineWall(x, y, z, false);
+					}
 				}
 			}
 		};
@@ -572,7 +574,9 @@ struct StateTcpc : State<LBM_TYPE, MACRO, CPU_MACRO, LBM_DATA, LBM_BC>
 			for (idx x = lbm.offset_X; x < lbm.offset_X + lbm.local_X; ++x)
 			for (idx z = lbm.offset_Z; z < lbm.offset_Z + lbm.local_Z; ++z) {
 				if (!lbm.getWall(x, source_y, z)) {
-					lbm.defineWall(x, boundary_y, z, false);
+					for (idx y = boundary_y; y != source_y + inward_step; y += inward_step) {
+						lbm.defineWall(x, y, z, false);
+					}
 				}
 			}
 		};
