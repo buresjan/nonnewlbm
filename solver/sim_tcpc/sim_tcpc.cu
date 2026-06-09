@@ -150,9 +150,22 @@ static GeometryData readGeometry(const std::string& file_name)
 		geometry.dim[i] -= 1;
 	}
 
-	VTKRealType* p1 = mesh.GetPoint(1);
-	VTKRealType* p0 = mesh.GetPoint(0);
-	geometry.dx = p1[0] - p0[0];
+	auto positiveSpacing = [](vtkDataArray* coordinates, const char* axis) -> double {
+		if (!coordinates || coordinates->GetNumberOfTuples() < 2) {
+			throw std::runtime_error(std::string("Missing rectilinear ") + axis + " coordinates.");
+		}
+		double previous = coordinates->GetComponent(0, 0);
+		for (vtkIdType i = 1; i < coordinates->GetNumberOfTuples(); ++i) {
+			const double current = coordinates->GetComponent(i, 0);
+			const double spacing = std::fabs(current - previous);
+			if (spacing > 0.0) {
+				return spacing;
+			}
+			previous = current;
+		}
+		throw std::runtime_error(std::string("Cannot infer positive rectilinear ") + axis + " spacing.");
+	};
+	geometry.dx = positiveSpacing(mesh.GetXCoordinates(), "x");
 
 	vtkCellData* cell_data = mesh.GetCellData();
 	vtkDataArray* wall_array = cell_data ? cell_data->GetArray("wall") : nullptr;
@@ -719,6 +732,9 @@ int sim(const TcpcOptions& options)
 	const GeometryData geometry = readGeometry(options.geometry);
 	const Material material = materialByName(options.material);
 	const real phys_dl = (real)geometry.dx;
+	if (!(phys_dl > (real)0.0)) {
+		throw std::runtime_error("Geometry spacing must be positive.");
+	}
 	const real phys_viscosity = (real)material.nu_inf;
 	const real phys_dt = (real)(options.lbm_viscosity / phys_viscosity * phys_dl * phys_dl);
 	const real lbm_nu0 = material.carreau_yasuda
