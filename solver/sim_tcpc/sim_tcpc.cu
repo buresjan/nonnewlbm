@@ -193,6 +193,14 @@ struct LBM_BC_Tcpc
 	CUDA_HOSTDEV static bool isFluid(map_t mapgi) { return mapgi == GEO_FLUID; }
 	CUDA_HOSTDEV static bool isNotFluid(map_t mapgi) { return mapgi != GEO_FLUID; }
 	CUDA_HOSTDEV static bool isWall(map_t mapgi) { return mapgi == GEO_WALL; }
+	CUDA_HOSTDEV static bool isInflow(map_t mapgi)
+	{
+		return mapgi == GEO_INFLOW_LEFT || mapgi == GEO_INFLOW_RIGHT;
+	}
+	CUDA_HOSTDEV static bool isOutflowR(map_t mapgi)
+	{
+		return mapgi == GEO_OUTFLOW_FRONT || mapgi == GEO_OUTFLOW_BACK;
+	}
 
 	CUDA_HOSTDEV static bool isStreaming(map_t mapgi)
 	{
@@ -262,6 +270,7 @@ struct LBM_Data_Tcpc : LBM_Data<TRAITS, MACRO>
 {
 	using dreal = typename TRAITS::dreal;
 	using idx = typename TRAITS::idx;
+	using map_t = typename TRAITS::map_t;
 
 	dreal inflow_rho_left = no1;
 	dreal inflow_rho_right = no1;
@@ -284,6 +293,16 @@ struct LBM_Data_Tcpc : LBM_Data<TRAITS, MACRO>
 		KS.vx = inflow_right_area > 0 ? inflow_right / (dreal)inflow_right_area : (dreal)0;
 		KS.vy = (dreal)0;
 		KS.vz = (dreal)0;
+	}
+
+	CUDA_HOSTDEV void inflow(KernelStruct<dreal>& KS, idx x, idx y, idx z)
+	{
+		const map_t label = this->map(x, y, z);
+		if (label == LBM_BC_Tcpc<TRAITS>::GEO_INFLOW_RIGHT) {
+			inflowConditionRight(KS, x, y, z);
+		} else {
+			inflowConditionLeft(KS, x, y, z);
+		}
 	}
 };
 
@@ -603,12 +622,13 @@ struct StateTcpc : State<LBM_TYPE, MACRO, CPU_MACRO, LBM_DATA, LBM_BC>
 
 	real localNuLbm(real gamma_lbm) const
 	{
+		const real lbm_viscosity = lbm.physDt / lbm.physDl / lbm.physDl * lbm.physViscosity;
 		if (!material_is_cy) {
-			return lbm.lbmViscosity();
+			return lbm_viscosity;
 		}
 		const real arg = (real)1.0 + std::pow(gamma_lbm * lbm.lbm_lambda, lbm.lbm_a);
-		return lbm.lbmViscosity() +
-		       (lbm.lbm_nu0 - lbm.lbmViscosity()) *
+		return lbm_viscosity +
+		       (lbm.lbm_nu0 - lbm_viscosity) *
 		       std::pow(arg, (lbm.lbm_n - (real)1.0) / lbm.lbm_a);
 	}
 
