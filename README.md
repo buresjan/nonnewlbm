@@ -134,6 +134,10 @@ Defaults request `--partition=gp`, one GPU, 8 CPU threads, 32 GB RAM, and
 `--time 24:00:00`, `--mem 64G`, `--gres gpu:rtx5080:1`, or
 `--partition PARTITION_NAME`.
 
+The generated jobs export `OMPI_MCA_accelerator=cuda` so Open MPI does not
+abort on nodes where both ROCm and CUDA accelerator plugins are present.
+Additional job environment variables can be supplied as `--env NAME=VALUE`.
+
 If the screen session is interrupted but Slurm jobs keep running, resume
 polling and harvesting with:
 

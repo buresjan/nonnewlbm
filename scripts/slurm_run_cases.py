@@ -35,6 +35,7 @@ FAILED_STATES = {
     "TIMEOUT",
 }
 TERMINAL_STATES = COMPLETED_STATES | FAILED_STATES
+ENV_NAME_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 
 
 @dataclass
@@ -142,6 +143,7 @@ def render_sbatch(
             "",
             'cd "$REPO_ROOT"',
             'export OMP_NUM_THREADS="${SLURM_CPUS_PER_TASK:-1}"',
+            "export OMPI_MCA_accelerator=cuda",
             "",
             'if [ ! -x "$SOLVER_BINARY" ]; then',
             '    echo "Solver binary $SOLVER_BINARY is missing or not executable." >&2',
@@ -170,6 +172,14 @@ def render_sbatch(
                 "fi",
             ]
         )
+
+    for item in args.env:
+        name, _, value = item.partition("=")
+        if not name or not _:
+            raise ValueError(f"--env must be NAME=VALUE, got {item!r}")
+        if ENV_NAME_RE.fullmatch(name) is None:
+            raise ValueError(f"Invalid environment variable name in --env: {name!r}")
+        lines.append(f"export {name}={shlex.quote(value)}")
 
     lines.extend(
         [
@@ -509,6 +519,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--constraint", default=None)
     parser.add_argument("--threads-per-core", type=int, default=1)
     parser.add_argument("--extra-sbatch", action="append", default=[], help="Extra raw SBATCH option, e.g. '--mail-type=END'.")
+    parser.add_argument("--env", action="append", default=[], help="Extra job environment variable, NAME=VALUE.")
     return parser.parse_args()
 
 
