@@ -97,6 +97,50 @@ The solver writes results under `results_<case-id>/`, for example `results_v1_sx
 
 The command generated for each case passes the prescribed IVC/SVC flow rates from `configs/regimes.yaml` directly in ml/s.
 
+## Slurm Batch Runs
+
+For production runs, use the Slurm orchestrator from a persistent `screen` or
+`tmux` session. It writes one `job.sbatch` and `manifest.json` per case,
+submits the jobs, polls Slurm until all jobs finish, then computes
+`flows.csv` for each completed result directory and a combined
+`flow_summary.csv` under `runtime/slurm/run-*`.
+
+Dry-run the planned submissions:
+
+```bash
+python3 scripts/slurm_run_cases.py \
+  --dry-run \
+  --case-prefix prod_batch_ \
+  --case-suffix _t10 \
+  --final-time 10 \
+  --vtk-period 1 \
+  --print-period 0.1
+```
+
+Submit all configured regimes/materials and wait for postprocessing:
+
+```bash
+python3 scripts/slurm_run_cases.py \
+  --case-prefix prod_batch_ \
+  --case-suffix _t10 \
+  --final-time 10 \
+  --vtk-period 1 \
+  --print-period 0.1 \
+  2>&1 | tee runtime/slurm_driver_$(date +%Y%m%d_%H%M%S).log
+```
+
+Defaults request `--partition=gp`, one GPU, 8 CPU threads, 32 GB RAM, and
+12 hours walltime per case. Override these with flags such as
+`--time 24:00:00`, `--mem 64G`, `--gres gpu:rtx5080:1`, or
+`--partition PARTITION_NAME`.
+
+If the screen session is interrupted but Slurm jobs keep running, resume
+polling and harvesting with:
+
+```bash
+python3 scripts/slurm_run_cases.py --resume runtime/slurm/run-YYYYMMDD-HHMMSS
+```
+
 ## Outputs
 
 VTK output includes:
