@@ -11,7 +11,7 @@ geometry:
 solver:
   executable: solver/sim_tcpc/sim_tcpc
   final_time_s: 10.0
-  vtk_period_s: 0.1
+  vtk_period_s: 1.0
   print_period_s: 0.1
   stat_reset_period_s: -1.0
   lbm_viscosity: 1.0e-4

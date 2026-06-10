@@ -90,7 +90,7 @@ line instead of editing YAML:
 
 ```bash
 python3 scripts/run_case.py --regime v1 --material newtonian --final-time 1 --vtk-period 1
-python3 scripts/run_all_cases.py --final-time 1 --vtk-period 1 --print-period 0.05
+python3 scripts/run_all_cases.py --final-time 10 --vtk-period 1 --print-period 0.1
 ```
 
 The solver writes results under `results_<case-id>/`, for example `results_v1_sx/`.
