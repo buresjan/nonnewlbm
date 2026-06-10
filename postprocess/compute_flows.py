@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import csv
 import glob
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -18,6 +19,10 @@ DEFAULT_LABELS = {
     5: "RPA",
     6: "LPA",
 }
+
+
+def natural_key(path: str) -> list[int | str]:
+    return [int(part) if part.isdigit() else part for part in re.split(r"(\d+)", path)]
 
 
 @dataclass
@@ -161,7 +166,7 @@ def main() -> int:
 
     files: list[Path] = []
     for item in args.paths:
-        matches = sorted(glob.glob(item))
+        matches = sorted(glob.glob(item), key=natural_key)
         files.extend(Path(m) for m in (matches or [item]))
     label_names = parse_label_map(args.labels)
     rows = [compute_file(path, label_names) for path in files]
